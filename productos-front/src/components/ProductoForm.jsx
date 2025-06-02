@@ -1,23 +1,31 @@
-// src/components/ProductoForm.jsx
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export default function ProductoForm() {
-  const { id } = useParams(); // si id existe, es edición; si no, es creación
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  const [nombre, setNombre]         = useState('');
+  const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [precio, setPrecio]         = useState('');
-  const [stock, setStock]           = useState('');
-  const [error, setError]           = useState('');
+  const [precio, setPrecio] = useState('');
+  const [stock, setStock] = useState('');
+  const [categoriaId, setCategoriaId] = useState('');
+  const [categorias, setCategorias] = useState([]);
+  const [error, setError] = useState('');
 
   const esEdicion = Boolean(id);
 
+  // Obtener categorías
+  useEffect(() => {
+    api.get('/categorias')
+      .then(res => setCategorias(res.data))
+      .catch(() => setCategorias([]));
+  }, []);
+
+  // Cargar producto si es edición
   useEffect(() => {
     if (esEdicion) {
-      // Cargar datos del producto a editar
       (async () => {
         try {
           const response = await api.get(`/productos/${id}`);
@@ -26,22 +34,22 @@ export default function ProductoForm() {
           setDescripcion(prod.descripcion || '');
           setPrecio(prod.precio);
           setStock(prod.stock);
+          setCategoriaId(prod.categoria_id || (prod.categoria && prod.categoria.id) || '');
         } catch (err) {
           setError('No se pudo cargar el producto');
         }
       })();
     }
-  }, [id]);
+  }, [id, esEdicion]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    const payload = { nombre, descripcion, precio, stock };
+    const payload = { nombre, descripcion, precio, stock, categoria_id: categoriaId };
 
     try {
       if (esEdicion) {
-        // Para PATCH parcial, solo enviar campos no vacíos
         await api.put(`/productos/${id}`, payload);
       } else {
         await api.post('/productos', payload);
@@ -101,6 +109,19 @@ export default function ProductoForm() {
             onChange={e => setStock(e.target.value)}
             required
           />
+        </div>
+        <div>
+          <label>Categoría:</label>
+          <select
+            value={categoriaId}
+            onChange={e => setCategoriaId(e.target.value)}
+            required
+          >
+            <option value="">-- Selecciona categoría --</option>
+            {categorias.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+            ))}
+          </select>
         </div>
         <button type="submit">{esEdicion ? 'Actualizar' : 'Crear'}</button>
       </form>

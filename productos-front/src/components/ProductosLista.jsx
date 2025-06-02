@@ -1,18 +1,17 @@
-// src/components/ProductosLista.jsx
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
 
 export default function ProductosLista() {
   const [productos, setProductos] = useState([]);
-  const [error, setError]         = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const fetchProductos = async () => {
     setError('');
     try {
       const response = await api.get('/productos');
-      setProductos(response.data);
+      setProductos(response.data.data || response.data); // Si usas paginación
     } catch (err) {
       if (err.response && err.response.status === 401) {
         navigate('/login');
@@ -52,6 +51,7 @@ export default function ProductosLista() {
           <tr>
             <th>ID</th>
             <th>Nombre</th>
+            <th>Categoría</th>
             <th>Precio</th>
             <th>Stock</th>
             <th>Acciones</th>
@@ -62,6 +62,7 @@ export default function ProductosLista() {
             <tr key={prod.id}>
               <td>{prod.id}</td>
               <td>{prod.nombre}</td>
+              <td>{prod.categoria ? prod.categoria.nombre : ''}</td>
               <td>{prod.precio}</td>
               <td>{prod.stock}</td>
               <td>
