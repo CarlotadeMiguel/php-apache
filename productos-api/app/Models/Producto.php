@@ -14,5 +14,12 @@ class Producto extends Model
         'descripcion',
         'precio',
         'stock',
+        'categoria_id' // Nuevo campo relacional
     ];
+
+      // Relación con categoría
+      public function categoria(): BelongsTo
+      {
+          return $this->belongsTo(Categoria::class);
+      }
 }
