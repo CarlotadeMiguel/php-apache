@@ -1,6 +1,6 @@
 <?php
-// app/Http/Controllers/CategoriaController.php
 namespace App\Http\Controllers;
+// app/Http/Controllers/CategoriaController.php
 
 use App\Models\Categoria;
 use Illuminate\Http\JsonResponse;
