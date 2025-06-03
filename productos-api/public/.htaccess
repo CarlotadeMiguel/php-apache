@@ -24,11 +24,6 @@
     RewriteRule ^ index.php [L]
 </IfModule>
 
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteRule ^(.*)$ public/$1 [L]
-</IfModule>
-
 # Bloquear métodos no permitidos
 <LimitExcept GET POST PUT PATCH DELETE OPTIONS>
     Deny from all
