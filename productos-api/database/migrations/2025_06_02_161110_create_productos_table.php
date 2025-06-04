@@ -14,7 +14,10 @@ class CreateProductosTable extends Migration
             $table->text('descripcion')->nullable();
             $table->decimal('precio', 8, 2);
             $table->integer('stock');
+            $table->unsignedBigInteger('categoria_id');
             $table->timestamps();
+
+            $table->foreign('categoria_id')->references('id')->on('categorias')->onDelete('cascade');
         });
     }
 
