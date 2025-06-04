@@ -27,7 +27,7 @@ export default function ProductoForm() {
       (async () => {
         try {
           const response = await api.get(`/productos/${id}`);
-          const prod = response.data;
+          const prod = response.data.data;
           setNombre(prod.nombre);
           setDescripcion(prod.descripcion || '');
           setPrecio(prod.precio);
