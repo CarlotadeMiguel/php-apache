@@ -10,7 +10,7 @@ class ProductoController extends Controller
     // Listar todos los productos (GET /api/productos)
     public function index(): JsonResponse
     {
-        $productos = Producto::paginate(10);
+        $productos = Producto::with('categoria')->paginate(10);
         
         return response()->json([
             'data' => $productos->items(),
