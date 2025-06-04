@@ -3,9 +3,9 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Response;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,14 +15,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
-        
+        // CORS debe ir antes que cualquier otro middleware
+        $middleware->prepend(\Illuminate\Http\Middleware\HandleCors::class);
+
+        // Alias para middlewares personalizados o de terceros
         $middleware->alias([
-            'auth'     => \App\Http\Middleware\Authenticate::class,
+            'auth'     => \Illuminate\Auth\Middleware\Authenticate::class,
             'auth:api' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // Ejemplo de manejo de excepciones personalizado (opcional)
         $exceptions->respond(function (Response $response, Throwable $e) {
             if ($e instanceof ModelNotFoundException) {
                 return response()->json([
